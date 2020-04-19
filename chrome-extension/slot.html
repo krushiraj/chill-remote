@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chill Remote</title>
+
+    <link rel="stylesheet" href="main.css" />
+
+    <!-- ***************************************************************************************
+       * Make sure we are importing the latest version of the Firebase JS. *
+       *************************************************************************************** -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase.js"></script>
+    <script src="slot.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <h3>
+        <img id="logo" src="firebase-logo.png" />
+        <span id="title">Chill Remote ID</span>
+      </h3>
+      <br />
+      <div id="slot-code">
+        <span id="slot-id">------</span>
+        <p id="instructions">
+          Enter the above number on Chill Remote App to connect.
+          <br />
+          <span id="hint">
+            Don't have the app? You can visit
+            <br />
+            <a
+              id="app-link"
+              target="_blank"
+              href="https://chill-remote.web.app"
+            >
+              https://chill-remote.web.app
+            </a>
+            <br />
+            to install the PWA or use it on browser itself.</span
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
