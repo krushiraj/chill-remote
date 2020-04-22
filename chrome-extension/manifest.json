@@ -21,6 +21,7 @@
   ],
   "permissions": [
     "storage",
+    "tabs",
     "activeTab",
     "https://us-central1-chill-remote-tkr.cloudfunctions.net/createSlot",
     "*://*.youtube.com/*"

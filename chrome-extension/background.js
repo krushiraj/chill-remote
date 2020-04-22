@@ -13,6 +13,7 @@ const config = {
 firebase.initializeApp(config);
 const createSlot = firebase.functions().httpsCallable('createSlot');
 const slots = firebase.database().ref('slots');
+const selectors = firebase.database().ref('selectors');
 const connected = firebase.database().ref('.info/connected');
 
 /**
@@ -60,8 +61,27 @@ async function initSlot() {
   }
 }
 
+function getDomain(url) {
+  const a = document.createElement('a');
+  a.href = url;
+  return a.hostname.replace(/(www.)|(.com)|(.in)|(.co)/g, '');
+}
+
 async function initApp() {
   console.log('app started');
+
+  window.selectors = (await selectors.once('value')).val();
+  window.supportedDomains = Object.keys(window.selectors || {});
+
+  selectors.on('value', (snap) => {
+    window.selectors = snap.val();
+    window.supportedDomains = Object.keys(window.selectors || {});
+  });
+
+  console.log({
+    selectors: window.selectors,
+    supportedDomains: window.supportedDomains,
+  });
 
   chrome.runtime.onMessage.addListener(
     ({ action, data }, sender, sendResponse) => {
@@ -77,15 +97,37 @@ async function initApp() {
   await initSlot();
 
   const slotId = window.slotId;
+
+  chrome.tabs.onActivated.addListener(() => {
+    chrome.windows.getAll({ populate: true }, (windows) => {
+      const currentState = {};
+      windows.forEach(({ tabs }) => {
+        tabs.forEach((tab) => {
+          const { url, favIconUrl, title, id, active } = tab;
+          console.log({
+            url,
+            id,
+            truth: window.supportedDomains.includes(getDomain(url)),
+          });
+          if (window.supportedDomains.includes(getDomain(url)))
+            currentState[id] = {
+              url,
+              favIconUrl,
+              title,
+              active,
+            };
+        });
+      });
+      console.log(currentState);
+      slots.child(slotId).child('currentState').set(currentState);
+      setTimestamp(true);
+    });
+  });
+
   connected.on('value', async (snap) => {
     const val = snap.val();
     console.log({ val });
-    if (val === true) {
-      // When I disconnect, update the last time I was seen online
-      setTimestamp(true);
-    } else {
-      setTimestamp(false);
-    }
+    setTimestamp(val);
   });
 
   console.log('adding observers on', slotId);
@@ -94,13 +136,19 @@ async function initApp() {
     .child('operation')
     .on('value', (snap) => {
       console.log(snap);
-      const { action, selector } = snap.val();
-      console.log('Sending message:', { action, selector });
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { action, selector }, function (
-          response
-        ) {});
+      const { action, control, domain, tabId } = snap.val();
+      const selector = window.selectors[domain][control];
+
+      console.log('Sending message:', {
+        action,
+        control,
+        domain,
+        tabId,
+        selector,
       });
+      chrome.tabs.sendMessage(parseInt(tabId), { action, selector }, function (
+        response
+      ) {});
     });
 }
 
