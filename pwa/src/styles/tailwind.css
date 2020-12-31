@@ -13199,6 +13199,10 @@ video {
   transition-duration: 1000ms;
 }
 
+body {
+  padding: 0;
+}
+
 @media (min-width: 640px) {
   .sm\:sr-only {
     position: absolute;

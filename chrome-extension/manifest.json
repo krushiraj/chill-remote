@@ -15,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/*"],
+      "matches": ["*://*/*"],
       "js": ["actions.js"]
     }
   ],
@@ -24,7 +24,7 @@
     "tabs",
     "activeTab",
     "https://us-central1-chill-remote-tkr.cloudfunctions.net/createSlot",
-    "*://*.youtube.com/*"
+    "*://*/*"
   ],
   "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'"
 }
